@@ -13,14 +13,14 @@
 
 
 
-    <a href="foods/warehouse"
+    <a href="/foods/warehouse"
        class="btn btn-primary"
        role="button">
         Foods Warehouse
     </a>
 
     <a style="margin-left: 50px"
-       href="foods/search"
+       href="/foods/search"
        class="btn btn-primary"
        role="button">
         Search Products

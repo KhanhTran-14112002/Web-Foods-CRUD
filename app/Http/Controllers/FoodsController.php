@@ -97,38 +97,38 @@ class FoodsController extends Controller
 
 
     public function index(Request $request) {
-        return $this->handleSearch2($request);
+        return $this->handleSearch($request);
     }
+
+//    private function handleSearch(Request $request) {
+//        $categories = Category::all();
+//        $tukhoa = $request->has('tukhoa') ? $request->query('tukhoa') : "";
+//        $category_id = $request->has('category_id') ? $request->query('category_id') : null;
+//
+//        $listfoods = [];
+//
+//        $query = DB::table("foods");
+//
+//        if ($category_id !== null && $tukhoa !== null) {
+//            $query->where(function ($query) use ($tukhoa, $category_id) {
+//                $query->where("name", "like", "%$tukhoa%")
+//                    ->Where('category_id', $category_id);
+//            });
+//        } elseif ($category_id !== null) {
+//            $query->where('category_id', $category_id);
+//        } elseif ($tukhoa !== null) {
+//            $query->where("name", "like", "%$tukhoa%");
+//        }
+//
+//        $listfoods = $query->orderBy("id", "asc")->get();
+//
+//        return view('foods.index', [
+//            'categories' => $categories,
+//            'listfoods' => $listfoods,
+//        ]);
+//    }
 
     private function handleSearch(Request $request) {
-        $categories = Category::all();
-        $tukhoa = $request->has('tukhoa') ? $request->query('tukhoa') : "";
-        $category_id = $request->has('category_id') ? $request->query('category_id') : null;
-
-        $listfoods = [];
-
-        $query = DB::table("foods");
-
-        if ($category_id !== null && $tukhoa !== null) {
-            $query->where(function ($query) use ($tukhoa, $category_id) {
-                $query->where("name", "like", "%$tukhoa%")
-                    ->Where('category_id', $category_id);
-            });
-        } elseif ($category_id !== null) {
-            $query->where('category_id', $category_id);
-        } elseif ($tukhoa !== null) {
-            $query->where("name", "like", "%$tukhoa%");
-        }
-
-        $listfoods = $query->orderBy("id", "asc")->get();
-
-        return view('foods.index', [
-            'categories' => $categories,
-            'listfoods' => $listfoods,
-        ]);
-    }
-
-    private function handleSearch2(Request $request) {
         $categories = Category::all();
         $search = isset($request->search)? $request->search : "";
         $category_id = isset($request->category_id) ? $request->category_id : null;
@@ -415,17 +415,52 @@ class FoodsController extends Controller
         ]);
     }
 
+//    public function warehouse(Request $request)
+//    {
+//        $food = Food::all(); //SELECT * FROM foods;
+//        $categories = Category::all();
+//        $food->category = $categories;
+//        // $food = Food::where('name','=','sushi')
+//        //             ->firstOrFail();
+//
+//        return view('foods.warehouse', [
+//            'foods' => $food,
+//            'categories' => $categories,
+//        ]);
+//    }
+
     public function warehouse(Request $request)
     {
-        $food = Food::all(); //SELECT * FROM foods;
-        $categories = Category::all();
-        $food->category = $categories;
-        // $food = Food::where('name','=','sushi')
-        //             ->firstOrFail();
+        return $this->handleSearchWarehouse($request);
+    }
 
+    private function handleSearchWarehouse(Request $request) {
+        $categories = Category::all();
+        $search = isset($request->search)? $request->search : "";
+        $category_id = isset($request->category_id) ? $request->category_id : null;
+        $description = isset($request->description) ? $request->description : "";
+
+        $listfoods = [];
+        $query = DB::table("foods");
+        if ($search) {;
+            $query->where("name", "like", "%$search%");
+        }
+        if (!empty($category_id)) {
+            $query->where('category_id', $category_id);
+
+        }
+        if ($description) {
+            $query->where("description", "like", "%$description%");
+        }
+//         dd($query->toSQl());
+//        $listfoods = $query->orderBy("id", "asc")->get();
+        $listfoods =array();
+        $listfoods = $query
+            ->orderBy("id", "asc")->paginate(12);
+//        dd($listfoods->toSQl());
         return view('foods.warehouse', [
-            'foods' => $food,
             'categories' => $categories,
+            'listfoods' => $listfoods,
         ]);
     }
 
