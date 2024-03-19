@@ -100,33 +100,7 @@ class FoodsController extends Controller
         return $this->handleSearch($request);
     }
 
-//    private function handleSearch(Request $request) {
-//        $categories = Category::all();
-//        $tukhoa = $request->has('tukhoa') ? $request->query('tukhoa') : "";
-//        $category_id = $request->has('category_id') ? $request->query('category_id') : null;
-//
-//        $listfoods = [];
-//
-//        $query = DB::table("foods");
-//
-//        if ($category_id !== null && $tukhoa !== null) {
-//            $query->where(function ($query) use ($tukhoa, $category_id) {
-//                $query->where("name", "like", "%$tukhoa%")
-//                    ->Where('category_id', $category_id);
-//            });
-//        } elseif ($category_id !== null) {
-//            $query->where('category_id', $category_id);
-//        } elseif ($tukhoa !== null) {
-//            $query->where("name", "like", "%$tukhoa%");
-//        }
-//
-//        $listfoods = $query->orderBy("id", "asc")->get();
-//
-//        return view('foods.index', [
-//            'categories' => $categories,
-//            'listfoods' => $listfoods,
-//        ]);
-//    }
+
 
     private function handleSearch(Request $request) {
         $categories = Category::all();
@@ -151,7 +125,7 @@ class FoodsController extends Controller
 
         $listfoods = $query
             ->where('is_active', true)
-            ->orderBy("id", "asc")->paginate(3)->onEachSide(2);
+            ->orderBy("id", "asc")->paginate(12)->onEachSide(2);
 //        dd($listfoods);
         return view('foods.index', [
             'categories' => $categories,
@@ -197,14 +171,12 @@ class FoodsController extends Controller
             'image' => 'mimes:jpg,png,jpeg|max:5048'
         ]);
 
-//        $generatedImageName = 'image'.time().'-'
-//            .$request->name.'.'
-//            .$request->image->extension();
-//        //move to a folder
-//        $request->image->move(public_path('images'), $generatedImageName);
+
 
 // Kiểm tra giá trị của checkbox is_active và chuyển đổi thành kiểu boolean
-        $is_active = $request->has('is_active');
+
+        $is_active = isset($request->is_active);
+//        dd($is_active);
         if ($request->hasFile('image')) {
 
             // Nếu có hình ảnh mới được tải lên, cập nhật image_path
@@ -292,20 +264,6 @@ class FoodsController extends Controller
         ]);
     }
 
-//    public function edit($id)
-//    {
-//        $food = Food::find($id);
-//        $categories = Category::all();
-//
-//        // Truy vấn category tương ứng với category_id của food
-//        $foodCategory = Category::find($food->category_id);
-//
-//        return view('foods.edit', [
-//            'categories' => $categories,
-//            'food' => $food,
-//            'foodCategory' => $foodCategory // Truyền category của food vào view
-//        ]);
-//    }
 
 
     /**
@@ -327,8 +285,9 @@ class FoodsController extends Controller
         ]);
 
         // Kiểm tra giá trị của checkbox is_active và chuyển đổi thành kiểu boolean
-        $is_active = $request->has('is_active');
-
+//        $is_active = $request->has('is_active');
+        $is_active = isset($request->is_active);
+//        dd($is_active);
         // Lấy thông tin food từ cơ sở dữ liệu
         $food = Food::findOrFail($id);
 
@@ -359,19 +318,6 @@ class FoodsController extends Controller
     }
 
 
-//    public function update(Request $request, $id)
-//    {
-//
-//        $food = Food::where('id', $id)
-//            ->update([
-//                'name' => $request->input('name'),
-//                'count' => $request->input('count'),
-//                'description' => $request->input('description'),
-//                'category_id' => $request->input('category_id')
-//            ]);
-//
-//        return redirect('/foods');
-//    }
 
 
     /**
@@ -415,26 +361,14 @@ class FoodsController extends Controller
         ]);
     }
 
-//    public function warehouse(Request $request)
-//    {
-//        $food = Food::all(); //SELECT * FROM foods;
-//        $categories = Category::all();
-//        $food->category = $categories;
-//        // $food = Food::where('name','=','sushi')
-//        //             ->firstOrFail();
-//
-//        return view('foods.warehouse', [
-//            'foods' => $food,
-//            'categories' => $categories,
-//        ]);
-//    }
 
-    public function warehouse(Request $request)
+    public function warehouse(Request $request): \Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Contracts\Foundation\Application
     {
         return $this->handleSearchWarehouse($request);
     }
 
-    private function handleSearchWarehouse(Request $request) {
+    private function handleSearchWarehouse(Request $request): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
+    {
         $categories = Category::all();
         $search = isset($request->search)? $request->search : "";
         $category_id = isset($request->category_id) ? $request->category_id : null;
