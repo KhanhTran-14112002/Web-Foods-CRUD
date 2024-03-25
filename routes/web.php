@@ -1,6 +1,7 @@
 <?php
 
 
+use App\Http\Controllers\CategoriesController;
 use App\Models\Category;
 use App\Models\Food;
 use Illuminate\Support\Facades\DB;
@@ -11,16 +12,18 @@ use App\Http\Controllers\PostsController;
 use App\Http\Controllers\FoodsController;
 use Illuminate\Http\Request;
 
-Route::get('/', [FoodsController::class, 'index']);
+//Route::get('/', [FoodsController::class, 'index']);
+Route::get('/', [PagesController::class, 'index']);
+
 Route::get('/Home', [PagesController::class, 'warehouse']);
 Route::get('/posts', [PostsController::class, 'index']);
 //Auth::routes();
 
 Route::get('/foods/warehouse', [FoodsController::class, 'warehouse']);
 Route::get('/foods/search', [FoodsController::class, 'search']);
-Route::resource('foods', FoodsController::class);
+Route::resource('/foods', FoodsController::class);
 
-
+Route::resource('/categories', CategoriesController::class);
 
 
 

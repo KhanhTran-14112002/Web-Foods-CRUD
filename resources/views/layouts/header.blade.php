@@ -52,6 +52,10 @@
   color: #FFFAF0;
   font-weight: bold;
   transition: color 0.3s ease;">Foods</a></li>
+        <li style=" margin-right: 20px;"><a href="/categories" style="text-decoration: none;
+  color: #FFFAF0;
+  font-weight: bold;
+  transition: color 0.3s ease;">Categories</a></li>
 {{--        <li style=" margin-right: 20px;"><a style="text-decoration: none;--}}
 {{--  color: #4C0070;--}}
 {{--  font-weight: bold;--}}

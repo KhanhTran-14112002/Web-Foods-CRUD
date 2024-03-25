@@ -45,9 +45,6 @@
 
         <div><h3>Search products:</h3></div>
         <form class="d-flex" method="get">
-            {{-- <div class="w-20">--}}
-            {{-- Chọn danh mục--}}
-            {{-- </div>--}}
             <select id="category_id" class="form-select " aria-label="Default select example" name="category_id">
                 <option value="" {{ !request()->has('category_id') ? 'selected' : '' }}>--Chọn quốc gia--</option>
                 @foreach ($categories as $category)
@@ -71,50 +68,54 @@
             <button type="submit" class="btn btn-success w-25 h-50">Submit</button>
         </form>
 
-
-        <h2 class="mt-5">
+        <a href="/foods/warehouse"
+           class="btn btn-primary mt-3"
+           role="button">
+            Foods Warehouse
+        </a>
+        <h2 class="mt-3">
             List product in store:</h2>
         {{--===========================================================--}}
 
-        {{--        <table class="table table-striped">--}}
-        {{--            <thead>--}}
-        {{--            <tr>--}}
-        {{--                <th>STT</th>--}}
-        {{--                <th>Food name</th>--}}
-        {{--                <th>Description</th>--}}
-        {{--                <th>Count</th>--}}
+{{--                <table class="table table-striped">--}}
+{{--                    <thead>--}}
+{{--                    <tr>--}}
+{{--                        <th>STT</th>--}}
+{{--                        <th>Food name</th>--}}
+{{--                        <th>Description</th>--}}
+{{--                        <th>Count</th>--}}
 
-        {{--            </tr>--}}
-        {{--            </thead>--}}
-        {{--            <tbody>--}}
-        {{--            @php--}}
-        {{--                $counter = 1; // Khởi tạo biến đếm--}}
-        {{--            @endphp--}}
-        {{--            @if(count($listfoods) > 0)--}}
-        {{--                @foreach ($listfoods as $food)--}}
-        {{--                    @if($food->is_active)--}}
-        {{--                        <tr>--}}
-        {{--                            <td>{{ $counter++ }}</td>--}}
-        {{--                            <td>{{ $food->name }}</td>--}}
-        {{--                            <td>{{ $food->description }}</td>--}}
-        {{--                            <td> {{ $food->count }}</td>--}}
-        {{--                            <td>--}}
-        {{--                                <a href="/foods/{{ $food->id }}" style="font-size: 25px">--}}
-        {{--                                    <button type="button" class="btn btn-success">Food detail</button>--}}
-        {{--                                </a>--}}
+{{--                    </tr>--}}
+{{--                    </thead>--}}
+{{--                    <tbody>--}}
+{{--                    @php--}}
+{{--                        $counter = 1; // Khởi tạo biến đếm--}}
+{{--                    @endphp--}}
+{{--                    @if(count($listfoods) > 0)--}}
+{{--                        @foreach ($listfoods as $food)--}}
+{{--                            @if($food->is_active)--}}
+{{--                                <tr>--}}
+{{--                                    <td>{{ $counter++ }}</td>--}}
+{{--                                    <td>{{ $food->name }}</td>--}}
+{{--                                    <td>{{ $food->description }}</td>--}}
+{{--                                    <td> {{ $food->count }}</td>--}}
+{{--                                    <td>--}}
+{{--                                        <a href="/foods/{{ $food->id }}" style="font-size: 25px">--}}
+{{--                                            <button type="button" class="btn btn-success">Food detail</button>--}}
+{{--                                        </a>--}}
 
-        {{--                            </td>--}}
-        {{--                        </tr>--}}
-        {{--                    @endif--}}
-        {{--                @endforeach--}}
-        {{--            @elseif(count($listfoods) == 0)--}}
-        {{--                <p style="color: red">Không tìm thấy sảng phẩm</p>--}}
+{{--                                    </td>--}}
+{{--                                </tr>--}}
+{{--                            @endif--}}
+{{--                        @endforeach--}}
+{{--                    @elseif(count($listfoods) == 0)--}}
+{{--                        <p style="color: red">Không tìm thấy sảng phẩm</p>--}}
 
-        {{--            @endif--}}
+{{--                    @endif--}}
 
 
-        {{--            </tbody>--}}
-        {{--        </table>--}}
+{{--                    </tbody>--}}
+{{--                </table>--}}
 
         <div class="d-flex flex-wrap container mt-3 justify-content-between">
             @if(count($listfoods) > 0)
@@ -149,7 +150,7 @@
                                     @if( $food->description )
                                         <p style="height: 60px"><strong>Description: </strong> {{ $food->description }}</p>
                                     @else
-                                        <p style="height: 60px"><strong>Description: </strong>Product has no description yet.</p>
+                                        <p style="height: 60px;color: red"><strong>Description: </strong>Product has no description yet.</p>
                                     @endif
                                     <p><strong>Count:</strong> {{ $food->count }} items</p>
                                     <a href="/foods/{{ $food->id }}" style="font-size: 25px">
@@ -160,21 +161,17 @@
                         </div>
                     @endif
                 @endforeach
-        </div>
+
         @elseif(count($listfoods) == 0)
             <p style="color: red">Không tìm thấy sảng phẩm</p>
 
         @endif
-
+        </div>
 
         <nav aria-label="Page navigation example justify-content-center">
             {{ $listfoods->appends(request()->all())->links() }}
         </nav>
-        <a href="/foods/warehouse"
-           class="btn btn-primary"
-           role="button">
-            Foods Warehouse
-        </a>
+
     </div>
 
 @endsection

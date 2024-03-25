@@ -63,15 +63,22 @@
             {{--                                                   placeholder="Description of Foods" value="{{ request()->input('description') }}"></label>--}}
             {{--            </div>--}}
             <button type="submit" class="btn btn-success w-25 h-50">Submit</button>
-
-
         </form>
-        <div class="pt-3">
+
+
+
+        <div class="mt-5 d-flex justify-content-between ">
             <a href="/foods/create"
                 class="btn btn-success"
                 role="button">
                 Create a new Food
-            </a></div>
+            </a>
+            <a href="/foods"
+               class="btn btn-primary"
+               role="button">
+                Back to list foods
+            </a>
+        </div>
 
         <h2 class="pt-5">Products in stock:</h2>
 {{--        <table class="table table-striped">--}}
@@ -166,17 +173,19 @@
                                 @endif
                                 <p>Count: {{ $food->count }} items</p>
                                 <div class="d-flex justify-content-between">
-                                    <div class="">
+                                    <div class="d-flex">
                                         <a href="/foods/{{ $food->id }}"
-                                           style="font-size: 25px">
+                                           style="font-size: 25px;margin-right: 10px">
                                             <button type="button" class="btn btn-success">Food detail</button>
                                         </a>
+                                        <div></div>
                                         <a href="/foods/{{ $food->id }}/edit"
-                                           style="color: black; text-decoration: none;font-size: 25px">
-                                            <button class="btn btn-primary">
+                                           style="color: black;font-size: 25px">
+                                            <button class="btn btn-primary" style="text-decoration-style: solid">
                                                 Edit
                                             </button>
-                                        </a></div>
+                                        </a>
+                                    </div>
 
                                     <form class="mt-1" id="deleteForm" action="/foods/{{ $food->id }}" method="post">
                                         @csrf
@@ -194,17 +203,13 @@
                 @endforeach
         </div>
         @elseif(count($listfoods) == 0)
-            <p style="color: red">Không tìm thấy sảng phẩm</p>
+            <p style="color: red">Không tìm thấy sản phẩm</p>
 
         @endif
         <nav aria-label="Page navigation example justify-content-center">
             {{ $listfoods->appends(request()->all())->links() }}
         </nav>
-        <a href="/foods"
-           class="btn btn-primary"
-           role="button">
-            Back to list foods
-        </a>
+
     </div>
 
 

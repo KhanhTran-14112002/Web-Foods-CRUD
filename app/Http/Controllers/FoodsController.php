@@ -10,6 +10,7 @@ use App\Models\Category;
 use App\Http\Requests\CreateValidationRequest;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Contracts\Pagination\Paginator;
+
 class FoodsController extends Controller
 {
     /**
@@ -17,7 +18,6 @@ class FoodsController extends Controller
      *
      * @return \Illuminate\Contracts\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\View\View|\Illuminate\Foundation\Application
      */
-
 
 
 //    public function index(Request $request)
@@ -96,36 +96,39 @@ class FoodsController extends Controller
 //    }
 
 
-    public function index(Request $request) {
+    public function index(Request $request)
+    {
         return $this->handleSearch($request);
     }
 
 
-
-    private function handleSearch(Request $request) {
+    private function handleSearch(Request $request)
+    {
         $categories = Category::all();
-        $search = isset($request->search)? $request->search : "";
+        $search = isset($request->search) ? $request->search : "";
         $category_id = isset($request->category_id) ? $request->category_id : null;
         $description = isset($request->description) ? $request->description : "";
 
         $listfoods = [];
         $query = DB::table("foods");
-        if ($search) {;
-            $query->where("name", "like", "%$search%");
+        if ($search) {
+            ;
+            $query->orWhere("name", "like", "%$search%");
+            $query->orWhere("description", "like", "%$search%");
         }
         if (!empty($category_id)) {
             $query->where('category_id', $category_id);
 
         }
-        if ($description) {
-            $query->where("description", "like", "%$description%");
-        }
+//        if ($description) {
+//            $query->where("description", "like", "%$description%");
+//        }
 //         dd($query->toSQl());
 //        $listfoods = $query->orderBy("id", "asc")->get();
 
         $listfoods = $query
             ->where('is_active', true)
-            ->orderBy("id", "asc")->paginate(12)->onEachSide(2);
+            ->orderBy("id", "asc")->paginate(12);
 //        dd($listfoods);
         return view('foods.index', [
             'categories' => $categories,
@@ -172,55 +175,63 @@ class FoodsController extends Controller
         ]);
 
 
-
 // Kiểm tra giá trị của checkbox is_active và chuyển đổi thành kiểu boolean
 
         $is_active = isset($request->is_active);
 //        dd($is_active);
+
+
+//        if ($request->hasFile('image')) {
+//
+//            // Nếu có hình ảnh mới được tải lên, cập nhật image_path
+//            $generatedImageName = 'image' . time() . '-'
+//                . $request->name . '.'
+//                . $request->image->extension();
+//
+//            // Di chuyển hình ảnh mới vào thư mục images
+//            $request->image->move(public_path('storage'), $generatedImageName);
+//            $food = Food::create([
+//                'name' => $request->input('name'),
+//                'count' => $request->input('count'),
+//                'description' => $request->input('description'),
+//                'category_id' => $request->input('category_id'),
+//                'image_path' => $generatedImageName,
+//                'is_active' => $is_active,
+//            ]);
+//        }
+//        $food = Food::create([
+//            'name' => $request->input('name'),
+//            'count' => $request->input('count'),
+//            'description' => $request->input('description'),
+//            'category_id' => $request->input('category_id'),
+//            'is_active' => $is_active,
+//        ]);
+
         if ($request->hasFile('image')) {
-
-            // Nếu có hình ảnh mới được tải lên, cập nhật image_path
-            $generatedImageName = 'image' . time() . '-'
-                . $request->name . '.'
-                . $request->image->extension();
-
-            // Di chuyển hình ảnh mới vào thư mục images
+            $generatedImageName = 'image' . time() . '-' . $request->name . '.' . $request->image->extension();
             $request->image->move(public_path('storage'), $generatedImageName);
-            $food = Food::create([
-                'name' => $request->input('name'),
-                'count' => $request->input('count'),
-                'description' => $request->input('description'),
-                'category_id' => $request->input('category_id'),
-                'image_path' => $generatedImageName,
-                'is_active' => $is_active,
-            ]);
-        } else {
-            $food = Food::create([
-                'name' => $request->input('name'),
-                'count' => $request->input('count'),
-                'description' => $request->input('description'),
-                'category_id' => $request->input('category_id'),
-                'is_active' => $is_active,
-            ]);
         }
-        //dd('This is store function');
-        // $food = new Food();
-        // $food->name = $request->input('name');
-        // $food->count = $request->input('count');
-        // $food->description = $request->input('description');
-        //$request->validated();
-        //we need validate data here
-        // $request->validate([
-        //     //'name' => 'required|unique:foods',
-        //     'name' => new Uppercase,
-        //     'count' => 'required|integer|min:0|max:1000',
-        //     'category_id' => 'required',
-        // ]);
-        //if the validation is pass, it will come here !
-        //Otherwise it will throw an exception(ValidationException)
+
+        // Tạo mới Food object
+        $foodData = [
+            'name' => $request->input('name'),
+            'count' => $request->input('count'),
+            'description' => $request->input('description'),
+            'category_id' => $request->input('category_id'),
+            'is_active' => $is_active,
+        ];
+
+        // Nếu có hình ảnh mới được tải lên, thêm image_path vào dữ liệu
+        if (isset($generatedImageName)) {
+            $foodData['image_path'] = $generatedImageName;
+        }
+
+        // Lưu dữ liệu vào database
+        $food = Food::create($foodData);
+
 
         //save to Database
-        $food->save();
+//        $food->save();
         return redirect('/foods/warehouse');
     }
 
@@ -265,7 +276,6 @@ class FoodsController extends Controller
     }
 
 
-
     /**
      * Update the specified resource in storage.
      *
@@ -291,33 +301,30 @@ class FoodsController extends Controller
         // Lấy thông tin food từ cơ sở dữ liệu
         $food = Food::findOrFail($id);
 
-        if ($request->hasFile('image')) {
-            // Nếu có hình ảnh mới được tải lên, cập nhật image_path
+        if (isset($request->image)) {
             $generatedImageName = 'image' . time() . '-' . $request->name . '.' . $request->image->extension();
             $request->image->move(public_path('storage'), $generatedImageName);
-            $food->update([
-                'name' => $request->input('name'),
-                'count' => $request->input('count'),
-                'description' => $request->input('description'),
-                'category_id' => $request->input('category_id'),
-                'image_path' => $generatedImageName,
-                'is_active' => $is_active,
-            ]);
-        } else {
-            // Nếu không có hình ảnh mới được tải lên
-            $food->update([
-                'name' => $request->input('name'),
-                'count' => $request->input('count'),
-                'description' => $request->input('description'),
-                'category_id' => $request->input('category_id'),
-                'is_active' => $is_active,
-            ]);
         }
+
+        // Tạo mới Food object
+        $foodData = [
+            'name' => $request->input('name'),
+            'count' => $request->input('count'),
+            'description' => $request->input('description'),
+            'category_id' => $request->input('category_id'),
+            'is_active' => $is_active,
+        ];
+
+        // Nếu có hình ảnh mới được tải lên, thêm image_path vào dữ liệu
+        if (isset($generatedImageName)) {
+            $foodData['image_path'] = $generatedImageName;
+        }
+
+        // Lưu dữ liệu vào database
+        $food->update($foodData);
 
         return redirect('/foods/' . $id . '/edit');
     }
-
-
 
 
     /**
@@ -370,25 +377,28 @@ class FoodsController extends Controller
     private function handleSearchWarehouse(Request $request): \Illuminate\Contracts\View\View|\Illuminate\Foundation\Application|\Illuminate\Contracts\View\Factory|\Illuminate\Contracts\Foundation\Application
     {
         $categories = Category::all();
-        $search = isset($request->search)? $request->search : "";
+        $search = isset($request->search) ? $request->search : "";
         $category_id = isset($request->category_id) ? $request->category_id : null;
         $description = isset($request->description) ? $request->description : "";
 
         $listfoods = [];
         $query = DB::table("foods");
-        if ($search) {;
-            $query->where("name", "like", "%$search%");
+        if ($search) {
+
+            $query->orWhere("name", "like", "%$search%");
+            $query->orWhere("description", "like", "%$search%");
         }
         if (!empty($category_id)) {
-            $query->where('category_id', $category_id);
+            $query->Where('category_id', $category_id);
 
         }
         if ($description) {
             $query->where("description", "like", "%$description%");
+
         }
 //         dd($query->toSQl());
 //        $listfoods = $query->orderBy("id", "asc")->get();
-        $listfoods =array();
+        $listfoods = array();
         $listfoods = $query
             ->orderBy("id", "asc")->paginate(12);
 //        dd($listfoods->toSQl());
